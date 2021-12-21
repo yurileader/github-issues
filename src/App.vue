@@ -1,23 +1,35 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <router-view/>
+    <div class="mb-5">
+      <img id="logo-img"
+        src="./assets/GitHub-Mark.png"
+      />
+
+      <h2 class="text-center">GitHub Issues</h2>
+    </div>
+
+
+    <router-view />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'App'
-}
+  name: "App"
+};
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+#logo-img{
+  width: 200px;
+  display: block;
+  background: url('./assets/GitHub-Mark.png');
+  margin: 0 auto;
 }
+
+.body{
+background: url('./assets/GitHub-Mark.png');
+background-size: cover;
+}
+
 </style>
