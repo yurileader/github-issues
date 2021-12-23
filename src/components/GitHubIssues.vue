@@ -39,8 +39,21 @@
       </div>
     </form>
 
-    <div class="mt-5">
-      <table class="table table-hover">
+    <template v-if="selectedIssue.id">
+      {{ selectedIssue.body }}
+      <div class="position-absolute bottom">
+        <button
+        @click.prevent.stop="voltar()"
+        type="submit"
+        class="btn btn-primary btn-sm"
+      >
+        Voltar
+      </button>
+      </div>
+    </template>
+
+    <div class="mt-5" v-if="!selectedIssue.id">
+      <table class="table table-striped table-hover">
         <thead>
           <tr>
             <th scope="col">Número</th>
@@ -54,8 +67,13 @@
             </td>
           </tr>
           <tr v-for="usr in userlist" :key="usr.id">
-            <td>{{ usr.id }}</td>
-            <td>{{ usr.body }}</td>
+            <td>
+              <a @click.prevent.stop="buscarIssueId(usr.number)"
+              class="text-decoration-none fw-bold" href="">{{
+                usr.number
+              }}</a>
+            </td>
+            <td>{{ usr.title }}</td>
           </tr>
           <tr v-if="!userlist.length">
             <td>#</td>
@@ -83,6 +101,7 @@ export default {
         title: String,
         body: String
       },
+      selectedIssue: {},
       loader: false,
       userlist: []
     };
@@ -92,10 +111,31 @@ export default {
     buscarIssues() {
       if (this.username && this.repositorio) {
         this.loader = true;
+        const url = `https://api.github.com/repos/${this.username}/${this.repositorio}/issues`;
+        console.log(url);
         axios
-          .get("https://jsonplaceholder.typicode.com/posts")
+          .get(url)
           .then(response => {
             this.userlist = [...response.data];
+            console.log(this.userlist);
+          })
+          .finally(() => {
+            this.loader = false;
+          })
+          .catch(erro => {
+            this.userlist = [];
+          });
+      }
+    },
+
+    buscarIssueId(issueId) {
+      if (this.username && this.repositorio) {
+        this.loader = true;
+        const url = `https://api.github.com/repos/${this.username}/${this.repositorio}/issues/${issueId}`;
+        axios
+          .get(url)
+          .then(response => {
+            this.selectedIssue = response.data;
           })
           .finally(() => {
             this.loader = false;
@@ -107,8 +147,13 @@ export default {
     },
 
     limpar() {
-      console.log("Limpou");
-      (this.username = ""), (this.repositorio = ""), (this.userlist = []);
+      (this.username = ""),
+        (this.repositorio = ""),
+        (this.userlist = []);
+    },
+
+    voltar(){
+    (this.selectedIssue = {});
     }
   }
 };
