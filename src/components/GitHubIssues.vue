@@ -48,11 +48,16 @@
           </tr>
         </thead>
         <tbody>
+          <tr v-if="loader">
+            <td colspan="2" class="text-center">
+              <img src="../assets/Spinner-animado.svg" alt="" />
+            </td>
+          </tr>
           <tr v-for="usr in userlist" :key="usr.id">
             <td>{{ usr.id }}</td>
             <td>{{ usr.body }}</td>
           </tr>
-          <tr v-if="!userlist">
+          <tr v-if="!userlist.length">
             <td>#</td>
             <td>Nenhuma issues encontrada!</td>
           </tr>
@@ -78,20 +83,27 @@ export default {
         title: String,
         body: String
       },
+      loader: false,
       userlist: []
     };
   },
 
   methods: {
     buscarIssues() {
-      console.log("BUSCOU");
-      axios
-        .get("https://jsonplaceholder.typicode.com/posts")
-        .then(response => {
-          this.userlist = [...response.data];
-          console.log(this.userlist);
-        })
-        .catch(erro => console.log(erro));
+      if (this.username && this.repositorio) {
+        this.loader = true;
+        axios
+          .get("https://jsonplaceholder.typicode.com/posts")
+          .then(response => {
+            this.userlist = [...response.data];
+          })
+          .finally(() => {
+            this.loader = false;
+          })
+          .catch(erro => {
+            this.userlist = [];
+          });
+      }
     },
 
     limpar() {
