@@ -39,21 +39,7 @@
       </div>
     </form>
 
-    <template v-if="selectedIssue.id">
-      <h2 class="mt-3">{{ selectedIssue.title }}</h2>
-      {{ selectedIssue.body }}
-      <div class="position-absolute bottom">
-        <button
-          @click.prevent.stop="voltar()"
-          type="submit"
-          class="btn btn-primary btn-sm"
-        >
-          Voltar
-        </button>
-      </div>
-    </template>
-
-    <div class="mt-3" v-if="!selectedIssue.id">
+    <div class="mt-3">
       <table class="table table-striped table-hover">
         <thead>
           <tr>
@@ -64,19 +50,27 @@
         <tbody>
           <tr v-if="loader">
             <td colspan="2" class="text-center">
-              <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-              </div>
+              <img
+                class="position-absolute top-50 bottom-10 end-50"
+                src="../assets/Spinner-animado.svg"
+                alt="loading spinner"
+              />
             </td>
           </tr>
           <tr v-for="issue in issueslist" :key="issue.id">
             <td>
-              <a
-                @click.prevent.stop="buscarIssueId(issue)"
-                class="text-decoration-none fw-bold"
-                href=""
-                >{{ issue.number }}</a
+              <router-link
+                :to="{
+                  name: 'GitHubIssue',
+                  params: {
+                    name: username,
+                    repo: repositorio,
+                    issue: issue.number
+                  }
+                }"
               >
+                {{ issue.number }}
+              </router-link>
             </td>
             <td>{{ issue.title }}</td>
           </tr>
@@ -92,7 +86,6 @@
 
 <script>
 import axios from "axios";
-import Vue from 'vue'
 
 export default {
   name: "GitHubIssues",
@@ -101,15 +94,24 @@ export default {
     return {
       username: "",
       repositorio: "",
-      selectedIssue: {},
       loader: false,
-      userlist: []
+      issueslist: []
     };
+  },
+  created() {
+    this.getLocalData();
   },
 
   methods: {
     buscarIssues() {
       if (this.username && this.repositorio) {
+        localStorage.setItem(
+          "gitHubIssues",
+          JSON.stringify({
+            username: this.username,
+            repository: this.repositorio
+          })
+        );
         this.loader = true;
         const url = `https://api.github.com/repos/${this.username}/${this.repositorio}/issues`;
         axios
@@ -119,27 +121,6 @@ export default {
           })
           .finally(() => {
             this.loader = false;
-          })
-          .catch(erro => {
-            this.issueslist = [];
-          });
-      }
-    },
-
-    buscarIssueId(issue) {
-      if (this.username && this.repositorio) {
-        this.loader = true;
-        const url = `https://api.github.com/repos/${this.username}/${this.repositorio}/issues/${issue.number}`;
-        axios
-          .get(url)
-          .then(response => {
-            this.selectedIssue = response.data;
-          })
-          .finally(() => {
-            this.loader = false;
-          })
-          .catch(erro => {
-            this.issueslist = [];
           });
       }
     },
@@ -148,8 +129,13 @@ export default {
       (this.username = ""), (this.repositorio = ""), (this.issueslist = []);
     },
 
-    voltar() {
-      this.selectedIssue = {};
+    getLocalData() {
+      const localData = JSON.parse(localStorage.getItem("gitHubIssues"));
+      if (localData.username && localData.repository) {
+        this.username = localData.username;
+        this.repositorio = localData.repository;
+        this.buscarIssues();
+      }
     }
   }
 };
