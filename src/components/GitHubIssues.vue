@@ -1,5 +1,11 @@
 <template>
   <div class="container">
+    <div
+      v-if="response.status === 'erro'"
+      class="alert alert-danger text-center"
+    >
+      {{ response.message }}
+    </div>
     <form>
       <div class="row">
         <div class="col-5">
@@ -29,7 +35,7 @@
             BUSCAR
           </button>
           <button
-            @click.prevent.stop="limpar()"
+            @click.prevent.stop="reset()"
             type="button"
             class="btn btn-danger btn-sm ms-1"
           >
@@ -68,6 +74,7 @@
                     issue: issue.number
                   }
                 }"
+                class="text-decoration-none "
               >
                 {{ issue.number }}
               </router-link>
@@ -95,7 +102,11 @@ export default {
       username: "",
       repositorio: "",
       loader: false,
-      issueslist: []
+      issueslist: [],
+      response: {
+        status: "",
+        message: ""
+      }
     };
   },
   created() {
@@ -104,9 +115,15 @@ export default {
 
   methods: {
     buscarIssues() {
+      this.resetResponse();
+      this.issueslist = [];
       if (this.username && this.repositorio) {
-        localStorage.setItem("gitHubIssues",
-          JSON.stringify({username: this.username,repository: this.repositorio})
+        localStorage.setItem(
+          "gitHubIssues",
+          JSON.stringify({
+            username: this.username,
+            repository: this.repositorio
+          })
         );
         this.loader = true;
         const url = `https://api.github.com/repos/${this.username}/${this.repositorio}/issues`;
@@ -115,20 +132,31 @@ export default {
           .then(response => {
             this.issueslist = [...response.data];
           })
+          .catch(() => {
+            this.response.status = "erro";
+            this.response.message = "Repositorio não encontrado !";
+          })
           .finally(() => {
             this.loader = false;
           });
       }
     },
 
-    limpar() {
-      (this.username = ""), (this.repositorio = ""), (this.issueslist = []);
+    reset() {
+      (this.username = ""),
+        (this.repositorio = ""),
+        (this.issueslist = []),
+        localStorage.removeItem("gitHubIssues");
+    },
+    resetResponse() {
+      this.response.message = "";
+      this.response.status = "";
     },
 
     getLocalStorage() {
       const localData = JSON.parse(localStorage.getItem("gitHubIssues"));
 
-      if (localData.username && localData.repository) {
+      if (localData &&localData.username && localData.repository) {
         this.username = localData.username;
         this.repositorio = localData.repository;
         this.buscarIssues();
