@@ -40,19 +40,20 @@
     </form>
 
     <template v-if="selectedIssue.id">
+      <h2 class="mt-3">{{ selectedIssue.title }}</h2>
       {{ selectedIssue.body }}
       <div class="position-absolute bottom">
         <button
-        @click.prevent.stop="voltar()"
-        type="submit"
-        class="btn btn-primary btn-sm"
-      >
-        Voltar
-      </button>
+          @click.prevent.stop="voltar()"
+          type="submit"
+          class="btn btn-primary btn-sm"
+        >
+          Voltar
+        </button>
       </div>
     </template>
 
-    <div class="mt-5" v-if="!selectedIssue.id">
+    <div class="mt-3" v-if="!selectedIssue.id">
       <table class="table table-striped table-hover">
         <thead>
           <tr>
@@ -63,19 +64,23 @@
         <tbody>
           <tr v-if="loader">
             <td colspan="2" class="text-center">
-              <img src="../assets/Spinner-animado.svg" alt="" />
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
             </td>
           </tr>
-          <tr v-for="usr in userlist" :key="usr.id">
+          <tr v-for="issue in issueslist" :key="issue.id">
             <td>
-              <a @click.prevent.stop="buscarIssueId(usr.number)"
-              class="text-decoration-none fw-bold" href="">{{
-                usr.number
-              }}</a>
+              <a
+                @click.prevent.stop="buscarIssueId(issue)"
+                class="text-decoration-none fw-bold"
+                href=""
+                >{{ issue.number }}</a
+              >
             </td>
-            <td>{{ usr.title }}</td>
+            <td>{{ issue.title }}</td>
           </tr>
-          <tr v-if="!userlist.length">
+          <tr v-if="!issueslist.length">
             <td>#</td>
             <td>Nenhuma issues encontrada!</td>
           </tr>
@@ -87,6 +92,7 @@
 
 <script>
 import axios from "axios";
+import Vue from 'vue'
 
 export default {
   name: "GitHubIssues",
@@ -95,12 +101,6 @@ export default {
     return {
       username: "",
       repositorio: "",
-      user: !{
-        id: Number,
-        userId: Number,
-        title: String,
-        body: String
-      },
       selectedIssue: {},
       loader: false,
       userlist: []
@@ -112,26 +112,24 @@ export default {
       if (this.username && this.repositorio) {
         this.loader = true;
         const url = `https://api.github.com/repos/${this.username}/${this.repositorio}/issues`;
-        console.log(url);
         axios
           .get(url)
           .then(response => {
-            this.userlist = [...response.data];
-            console.log(this.userlist);
+            this.issueslist = [...response.data];
           })
           .finally(() => {
             this.loader = false;
           })
           .catch(erro => {
-            this.userlist = [];
+            this.issueslist = [];
           });
       }
     },
 
-    buscarIssueId(issueId) {
+    buscarIssueId(issue) {
       if (this.username && this.repositorio) {
         this.loader = true;
-        const url = `https://api.github.com/repos/${this.username}/${this.repositorio}/issues/${issueId}`;
+        const url = `https://api.github.com/repos/${this.username}/${this.repositorio}/issues/${issue.number}`;
         axios
           .get(url)
           .then(response => {
@@ -141,19 +139,17 @@ export default {
             this.loader = false;
           })
           .catch(erro => {
-            this.userlist = [];
+            this.issueslist = [];
           });
       }
     },
 
     limpar() {
-      (this.username = ""),
-        (this.repositorio = ""),
-        (this.userlist = []);
+      (this.username = ""), (this.repositorio = ""), (this.issueslist = []);
     },
 
-    voltar(){
-    (this.selectedIssue = {});
+    voltar() {
+      this.selectedIssue = {};
     }
   }
 };
