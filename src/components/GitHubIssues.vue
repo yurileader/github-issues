@@ -99,18 +99,14 @@ export default {
     };
   },
   created() {
-    this.getLocalData();
+    this.getLocalStorage();
   },
 
   methods: {
     buscarIssues() {
       if (this.username && this.repositorio) {
-        localStorage.setItem(
-          "gitHubIssues",
-          JSON.stringify({
-            username: this.username,
-            repository: this.repositorio
-          })
+        localStorage.setItem("gitHubIssues",
+          JSON.stringify({username: this.username,repository: this.repositorio})
         );
         this.loader = true;
         const url = `https://api.github.com/repos/${this.username}/${this.repositorio}/issues`;
@@ -129,8 +125,9 @@ export default {
       (this.username = ""), (this.repositorio = ""), (this.issueslist = []);
     },
 
-    getLocalData() {
+    getLocalStorage() {
       const localData = JSON.parse(localStorage.getItem("gitHubIssues"));
+
       if (localData.username && localData.repository) {
         this.username = localData.username;
         this.repositorio = localData.repository;

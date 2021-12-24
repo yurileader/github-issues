@@ -16,7 +16,7 @@
       </div>
 
       <div>
-        <a @click="voltar()" class="btn btn-success btn-sm">
+        <a @click="$router.back()" class="btn btn-success btn-sm">
           Voltar
         </a>
       </div>
@@ -54,10 +54,6 @@ export default {
           this.loader = false;
         });
     },
-
-    voltar() {
-      this.$router.back();
-    }
   }
 };
 </script>
