@@ -146,7 +146,8 @@ export default {
       (this.username = ""),
         (this.repositorio = ""),
         (this.issueslist = []),
-        localStorage.removeItem("gitHubIssues");
+        localStorage.removeItem("gitHubIssues")
+        this.resetResponse();
     },
     resetResponse() {
       this.response.message = "";
