@@ -8,17 +8,22 @@
       />
     </div>
 
-    <div v-if="!loader && issue.number">
-      <h1>Issue #{{ issue.number }}</h1>
-      <h2>{{ issue.title }}</h2>
-      <div>
-        {{ issue.body }}
+    <div class="card">
+      <div class="card-header text-center">
+        <h2>{{ issue.title }}</h2>
       </div>
+      <div class="card-body" v-if="!loader && issue.number">
+        <h1>Issue #{{ issue.number }}</h1>
 
-      <div>
-        <a @click="$router.back()" class="btn btn-success btn-sm">
-          Voltar
-        </a>
+        <div class="mt-3">
+          {{ issue.body }}
+        </div>
+
+        <div class="mt-2">
+          <a @click="$router.back()" class="btn btn-success btn-sm">
+            Voltar
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -53,7 +58,7 @@ export default {
         .finally(() => {
           this.loader = false;
         });
-    },
+    }
   }
 };
 </script>
