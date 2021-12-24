@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div class="container" id="app">
     <div class="mb-5">
       <img id="logo-img"
         src="./assets/GitHub-Mark.png"
