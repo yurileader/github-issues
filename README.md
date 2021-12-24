@@ -1,3 +1,4 @@
+![GitHub issues](https://github.com/yurileader/assets/blob/master/vuejs/github%20issues.gif)
 # github-issues
 
 > Projeto Vue Youtube ThiagoMaos
