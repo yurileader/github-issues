@@ -1,9 +1,10 @@
 # GitHub issues
-![GitHub issues](https://github.com/yurileader/assets/blob/master/vuejs/github%20issues.gif)
 
  Projeto desenvolvido em VueJS. Com objetivo de buscar todas issues em repositorios do github!
  
  Utilizando a biblioteca axios para realizar as requisições HTTP.
+ 
+![GitHub issues](https://github.com/yurileader/assets/blob/master/vuejs/github%20issues.gif)
 ## Build Setup
 
 ``` bash
